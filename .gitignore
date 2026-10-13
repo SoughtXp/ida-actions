@@ -1,1 +1,28 @@
+# OS cruft
 .DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# IDA Pro installer / shared libraries
+*.run
+*.so
+*.so.patched
+
+# IDA Pro license and generated artifacts
+ida.hexlic
+*.i64
+*.idb
+*.id0
+*.id1
+*.id2
+*.nam
+*.til
+
+# Generated analysis output
+# (keep source files; ignore decompiler output of downloaded targets)

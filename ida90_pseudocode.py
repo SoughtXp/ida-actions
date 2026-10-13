@@ -2,6 +2,7 @@
 import os
 import ida
 import idaapi
+import idautils
 import argparse
 import ida_segment
 
@@ -35,23 +36,24 @@ if not idaapi.init_hexrays_plugin():
     ida.close_database(save=False)
     exit()
 
-# Prepare the function addresses
+# Prepare the function addresses: decompile *every* function in the binary,
+# not only the entry points.
 funcaddrs = idaapi.eavec_t()
-for func_ea in range(idaapi.get_entry_qty()):
-    entry_ea = idaapi.get_entry(func_ea)
-    if entry_ea != idaapi.BADADDR:
-        funcaddrs.push_back(entry_ea)
+for func_ea in idautils.Functions():
+    funcaddrs.push_back(func_ea)
+
+print(f"Found {funcaddrs.size()} function(s) to decompile.")
 
 # Perform batch decompilation to generate C pseudocode
 base_name, _ = os.path.splitext(os.path.basename(args.file))
 output_file = f"{base_name}.c"
 try:
-    print(f"Generating C pseudocode")
+    print("Generating C pseudocode...")
     success = idaapi.decompile_many(output_file, funcaddrs, 0)
     if success:
-        print(f"Decompilation success.")
+        print(f"Decompilation success. Output written to {output_file}")
     else:
-        print(f"Decompilation failed. Check the log for details.")
+        print("Decompilation failed. Check the log for details.")
 except Exception as e:
     print(f"An error occurred: {e}")
 finally:
